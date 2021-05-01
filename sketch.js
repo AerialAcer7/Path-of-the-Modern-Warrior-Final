@@ -1,10 +1,10 @@
 var soldier,soldierImg,soldierFall,soldierJump;
-var ground,backGround,backgroundImg,backgroundImg2,backgroundImg3;
+var ground,backGround,backgroundImg,backgroundImg2,backgroundImg3,backgroundImg4;
 var gameState = 0;
 var sipahi,sipahiImg,sipahiGroup;
-var elite,eliteImg;
+var elite,eliteImg,eliteGroup;
 var superior,superiorImg;
-var bullet,bulletImg;
+var bullet,bulletImg,bulletGroup;
 var rock,rockImg,rockGroup;
 var lives = 3;
 
@@ -40,9 +40,11 @@ superiorImg = loadAnimation("images/Superior/Superior.png","images/Superior/Supe
              "images/Superior/Superior3.png","images/Superior/Superior4.png",
              "images/Superior/Superior4.png","images/Superior/Superior6.png");
         
-//backgroundImg2 = loadImage()
+backgroundImg2 = loadImage("images/war.jpg");
 
-//backgroundImg3 = loadImage()
+backgroundImg3 = loadImage("images/war2.jpg");
+
+backgroundImg4 = loadImage("images/You win.jpg");
 }
 
 function setup() {
@@ -55,6 +57,8 @@ function setup() {
 
 	backGround = createSprite(400,250,800,500);
 	backGround.addImage("path",backgroundImg);
+  backGround.addImage("war",backgroundImg2);
+  backGround.addImage("war2",backgroundImg3);
 	backGround.scale = 6;
 	backGround.velocityX = -4;
 
@@ -77,7 +81,10 @@ function setup() {
     bullet.scale = 0.3;*/
 
     rockGroup = new Group();
-
+    eliteGroup = new Group();
+    sipahiGroup = new Group();
+    superGroup = new Group();
+    bulletGroup = new Group();
   
 }
 
@@ -113,6 +120,33 @@ if(soldier.isTouching(sipahiGroup)){
   sipahiGroup.destroyEach();
 }
 
+if(soldier.isTouching(eliteGroup)){
+  lives = 0;
+  eliteGroup.destroyEach();
+}
+if(soldier.isTouching(superGroup)){
+  lives = 0;
+  superGroup.destroyEach();
+}
+
+if(bulletGroup.isTouching(sipahiGroup)){
+ sipahiGroup.destroyEach();
+ backGround.velocityX = backGround.velocityX-1;
+ rockGroup.velocityX = backGround.velocityX;
+}
+
+if(bulletGroup.isTouching(eliteGroup)){
+  eliteGroup.destroyEach();
+  backGround.velocityX = backGround.velocityX-1;
+  rockGroup.velocityX = backGround.velocityX;
+}
+
+if(bulletGroup.isTouching(superGroup)){
+  superGroup.destroyEach();
+  backGround.velocityX = backGround.velocityX-1;
+  rockGroup.velocityX = backGround.velocityX;
+}
+
   if(lives == 0){
    gameState = 1;   
   }
@@ -127,16 +161,27 @@ if(soldier.isTouching(sipahiGroup)){
    fill("red");
    text("GAME OVER",100,250); 
   }
+
+  spawnSuperior();
+  spawnElite();
   spawnSipahi();
   spawnRocks();
   textSize(25);
   fill(0,0,0);
   text("Lives: "+lives,50,50);
-  console.log(frameCount);  
-}
+  console.log(frameCount); 
+  if(keyDown("F")){
+  console.log(bullet); 
+
+  bullet = createSprite(soldier.x+35,soldier.y-25,2,2);
+  bullet.addImage("bullet",bulletImg);
+  bullet.velocityX = 29;
+  bullet.scale = 0.1;
+  bulletGroup.add(bullet);
+  }
 
 function spawnRocks(){
-  if(frameCount%300 === 0){
+  if(frameCount%200 === 0 && frameCount<4000){
    rock = createSprite(790,470,10,10);
    rock.addImage("rock",rockImg);
    rock.scale = 0.37;
@@ -145,17 +190,37 @@ function spawnRocks(){
 
   }  
 }
-
+}
 function spawnSipahi(){
-  if(frameCount>500 && frameCount%300 === 0){
-   sipahi = createSprite(480,420,10,10);
+  if(frameCount>500 && frameCount%300 === 0 && frameCount<1500){
+   sipahi = createSprite(720,420,10,10);
    sipahi.addAnimation("sipahi",sipahiImg);
    sipahiGroup.add(sipahi);
+   sipahi.velocityX = -2;
       
   }  
 }
 
-function mousePressed(){
-  
+function spawnElite(){
+ if(frameCount>1500 && frameCount%270 === 0 && frameCount<3000){
+   elite = createSprite(720,420,10,10)
+   elite.addAnimation("elite",eliteImg);
+   eliteGroup.add(elite);
+   elite.velocityX = -3;
+   elite.scale = 0.5;
+   backGround.changeImage("war");
+ }
+}
+
+function spawnSuperior(){
+  if(frameCount>3000 &&frameCount%250 === 0){
+   superior = createSprite(800,410,10,10);
+   superior.addAnimation("superior",superiorImg); 
+   superGroup.add(superior);
+   superior.velocityX = -4;
+   superior.scale = 0.95;
+   backGround.changeImage("war2"); 
+   backGround.scale = 7;                              
+  }
 }
 
