@@ -1,5 +1,5 @@
 var soldier,soldierImg,soldierFall,soldierJump;
-var ground,backGround,backgroundImg,backgroundImg2,backgroundImg3,backgroundImg4;
+var ground,backGround,backgroundImg,backgroundImg2,backgroundImg3;
 var gameState = 0;
 var sipahi,sipahiImg,sipahiGroup;
 var elite,eliteImg,eliteGroup;
@@ -44,14 +44,10 @@ backgroundImg2 = loadImage("images/war.jpg");
 
 backgroundImg3 = loadImage("images/war2.jpg");
 
-backgroundImg4 = loadImage("images/You win.jpg");
 }
 
 function setup() {
 	createCanvas(800, 500);
-
-
-	
 
 	//Create the Bodies Here.
 
@@ -107,8 +103,18 @@ function draw() {
   //soldier.scale = 0.35;
   soldier.velocityY = soldier.velocityY+0.5;
   //soldier.changeAnimation("soldier");
-}
-  soldier.collide(ground);
+  
+  textSize(20);
+  fill(10, 213, 240);
+  text("Press Right Arrow for shooting bullets",200,100);
+  text("Press Space for jumping",200,125);
+
+  spawnSuperior();
+  spawnElite();
+  spawnSipahi();
+  spawnRocks();
+
+
 
   if(soldier.isTouching(rockGroup)){
    lives = lives-1;   
@@ -147,8 +153,57 @@ if(bulletGroup.isTouching(superGroup)){
   rockGroup.velocityX = backGround.velocityX;
 }
 
-  if(lives == 0){
-   gameState = 1;   
+  soldier.collide(ground);
+
+  if(soldier.isTouching(rockGroup)){
+   lives = lives-1;   
+   rockGroup.destroyEach();
+}
+
+if(soldier.isTouching(sipahiGroup)){
+  lives = 0;
+  sipahiGroup.destroyEach();
+}
+
+if(soldier.isTouching(eliteGroup)){
+  lives = 0;
+  eliteGroup.destroyEach();
+}
+if(soldier.isTouching(superGroup)){
+  lives = 0;
+  superGroup.destroyEach();
+}
+
+if(bulletGroup.isTouching(sipahiGroup)){
+ sipahiGroup.destroyEach();
+ backGround.velocityX = backGround.velocityX-1;
+ rockGroup.velocityX = backGround.velocityX;
+}
+
+if(bulletGroup.isTouching(eliteGroup)){
+  eliteGroup.destroyEach();
+  backGround.velocityX = backGround.velocityX-1;
+  rockGroup.velocityX = backGround.velocityX;
+}
+
+if(bulletGroup.isTouching(superGroup)){
+  superGroup.destroyEach();
+  backGround.velocityX = backGround.velocityX-1;
+  rockGroup.velocityX = backGround.velocityX;
+}
+if(lives == 0){
+  gameState = 1;   
+ }
+
+ if(keyDown("RIGHT")){
+  console.log(bullet); 
+
+  bullet = createSprite(soldier.x+35,soldier.y-25,2,2);
+  bullet.addImage("bullet",bulletImg);
+  bullet.velocityX = 29;
+  bullet.scale = 0.1;
+  bulletGroup.add(bullet);
+  }
   }
 
   if(gameState == 1){
@@ -162,23 +217,12 @@ if(bulletGroup.isTouching(superGroup)){
    text("GAME OVER",100,250); 
   }
 
-  spawnSuperior();
-  spawnElite();
-  spawnSipahi();
-  spawnRocks();
   textSize(25);
   fill(0,0,0);
   text("Lives: "+lives,50,50);
   console.log(frameCount); 
-  if(keyDown("F")){
-  console.log(bullet); 
-
-  bullet = createSprite(soldier.x+35,soldier.y-25,2,2);
-  bullet.addImage("bullet",bulletImg);
-  bullet.velocityX = 29;
-  bullet.scale = 0.1;
-  bulletGroup.add(bullet);
-  }
+  soldier.collide(ground);
+}
 
 function spawnRocks(){
   if(frameCount%200 === 0 && frameCount<4000){
@@ -190,7 +234,7 @@ function spawnRocks(){
 
   }  
 }
-}
+
 function spawnSipahi(){
   if(frameCount>500 && frameCount%300 === 0 && frameCount<1500){
    sipahi = createSprite(720,420,10,10);
